@@ -6,25 +6,21 @@ import com.example.wsearch.repository.RoleRepository;
 import com.example.wsearch.repository.UserRepository;
 import com.example.wsearch.repository.VacancyRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class VacancyService {
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
     private VacancyRepository vacancyRepository;
-    private PasswordEncoder passwordEncoder;
 
-    public VacancyService(UserRepository userRepository, RoleRepository roleRepository, VacancyRepository vacancyRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+    public VacancyService(VacancyRepository vacancyRepository) {
         this.vacancyRepository = vacancyRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
-    public void addVacancy(VacancyDto vacancyDto) {
+    public boolean createVacancy(VacancyDto vacancyDto) {
         DbVacancy vacancy = new DbVacancy();
 
         vacancy.setName(vacancyDto.getName());
@@ -34,10 +30,15 @@ public class VacancyService {
         vacancy.setDescription(vacancyDto.getDescription());
         vacancy.setDate(vacancyDto.getDate());
 
-        vacancyRepository.save(vacancy);
+        try {
+            vacancyRepository.save(vacancy);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    public void editVacancy(VacancyDto updatedVacancyDto) {
+    public boolean updateVacancy(VacancyDto updatedVacancyDto) {
         Optional<DbVacancy> optionalVacancy = vacancyRepository.findById(updatedVacancyDto.getId());
         DbVacancy existingVacancy = optionalVacancy.orElseThrow(() -> new IllegalArgumentException("Вакансію не знайдено."));
 
@@ -48,30 +49,29 @@ public class VacancyService {
         existingVacancy.setDescription(updatedVacancyDto.getDescription());
         existingVacancy.setDate(updatedVacancyDto.getDate());
 
-        vacancyRepository.save(existingVacancy);
+        try {
+            vacancyRepository.save(existingVacancy);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    public void deleteVacancy(VacancyDto vacancyDto) {
-        vacancyRepository.deleteById(vacancyDto.getId());
+    public boolean deleteVacancy(Long id) {
+        try {
+            vacancyRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    public DbVacancy getVacancyById(VacancyDto vacancyDto) {
-        return vacancyRepository.findById(vacancyDto.getId())
+    public DbVacancy getVacancyById(Long id) {
+        return vacancyRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Вакансію не знайдено."));
     }
 
-    public List<VacancyDto> getAllVacancies() {
-        List<DbVacancy> vacancies = vacancyRepository.findAll();
-        return vacancies.stream()
-                .map((vacancy) -> mapToVacancyDto(vacancy))
-                .collect(Collectors.toList());
-    }
-
-    private VacancyDto mapToVacancyDto(DbVacancy vacancy){
-        VacancyDto vacancyDto = new VacancyDto();
-
-        vacancyDto.setId(vacancy.getId());
-
-        return vacancyDto;
+    public List<DbVacancy> getAllVacancies() {
+        return vacancyRepository.findAll();
     }
 }
