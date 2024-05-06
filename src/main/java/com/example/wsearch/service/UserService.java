@@ -8,12 +8,14 @@ import com.example.wsearch.repository.RoleRepository;
 import com.example.wsearch.repository.UserRepository;
 import com.example.wsearch.repository.VacancyRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
