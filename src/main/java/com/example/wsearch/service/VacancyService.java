@@ -1,23 +1,24 @@
 package com.example.wsearch.service;
 
 import com.example.wsearch.dto.VacancyDto;
+import com.example.wsearch.entity.DbUser;
 import com.example.wsearch.entity.DbVacancy;
-import com.example.wsearch.repository.RoleRepository;
 import com.example.wsearch.repository.UserRepository;
 import com.example.wsearch.repository.VacancyRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class VacancyService {
     private VacancyRepository vacancyRepository;
+    private UserRepository userRepository;
 
-    public VacancyService(VacancyRepository vacancyRepository) {
+    public VacancyService(VacancyRepository vacancyRepository, UserRepository userRepository) {
         this.vacancyRepository = vacancyRepository;
+        this.userRepository = userRepository;
     }
 
     public boolean createVacancy(VacancyDto vacancyDto) {
@@ -38,8 +39,8 @@ public class VacancyService {
         }
     }
 
-    public boolean updateVacancy(VacancyDto updatedVacancyDto) {
-        Optional<DbVacancy> optionalVacancy = vacancyRepository.findById(updatedVacancyDto.getId());
+    public boolean updateVacancy(VacancyDto updatedVacancyDto, Long id) {
+        Optional<DbVacancy> optionalVacancy = vacancyRepository.findById(id);
         DbVacancy existingVacancy = optionalVacancy.orElseThrow(() -> new IllegalArgumentException("Вакансію не знайдено."));
 
         existingVacancy.setName(updatedVacancyDto.getName());
@@ -65,6 +66,24 @@ public class VacancyService {
             return false;
         }
     }
+
+    public boolean addVacancy(Long userId, Long vacancyId) {
+        try {
+            DbUser existingUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("Користувача не знайдено."));
+
+            DbVacancy vacancy = vacancyRepository.findById(vacancyId)
+                    .orElseThrow(() -> new IllegalArgumentException("Вакансію не знайдено."));
+
+            existingUser.addVacancy(vacancy);
+
+            userRepository.save(existingUser);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 
     public DbVacancy getVacancyById(Long id) {
         return vacancyRepository.findById(id)

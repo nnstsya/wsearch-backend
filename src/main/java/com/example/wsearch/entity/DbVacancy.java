@@ -1,5 +1,6 @@
 package com.example.wsearch.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,8 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name="vacancy")
-public class DbVacancy
-{
+@JsonIgnoreProperties({"users"})
+public class DbVacancy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,12 +35,12 @@ public class DbVacancy
     @Column(nullable=false)
     private int salary;
 
-    @Column(nullable=false)
+    @Column(nullable=false, length = 4000)
     private String description;
 
     @Column(nullable=false)
     private Date date;
 
-    @ManyToMany(mappedBy="vacancy")
-    private List<DbUser> users;
+    @ManyToMany(mappedBy="vacancies")
+    private List<DbUser> users = new ArrayList<>();
 }

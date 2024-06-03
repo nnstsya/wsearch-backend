@@ -1,0 +1,1 @@
+INSERT INTO role (id, name) VALUES (1, 'EMPLOYEE'), (2, 'EMPLOYER') ON CONFLICT (id) DO NOTHING;
