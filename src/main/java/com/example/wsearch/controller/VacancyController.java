@@ -1,5 +1,6 @@
 package com.example.wsearch.controller;
 
+import com.example.wsearch.dto.UserDto;
 import com.example.wsearch.dto.VacancyDto;
 import com.example.wsearch.entity.DbVacancy;
 import com.example.wsearch.service.VacancyService;
@@ -8,36 +9,40 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/jobs")
 public class VacancyController {
     @Autowired
     private VacancyService vacancyService;
 
-    @PostMapping("jobs/create")
+    @PostMapping("/create")
     public boolean createVacancy(@RequestBody VacancyDto vacancyDto) {
         return vacancyService.createVacancy(vacancyDto);
     }
 
-    @GetMapping("jobs")
+    @GetMapping("")
     public List<DbVacancy> getAllVacancies() {
         return vacancyService.getAllVacancies();
-
     }
 
-    @DeleteMapping("jobs/{id}/edit")
+    @DeleteMapping("/{id}")
     public boolean deleteVacancy(@PathVariable("id") Long id) {
         return vacancyService.deleteVacancy(id);
     }
 
-    @GetMapping("jobs/{id}")
+    @GetMapping("/{id}")
     public DbVacancy getVacancyById(@PathVariable("id") Long id) {
         return vacancyService.getVacancyById(id);
     }
 
-    @PostMapping("jobs/{id}/edit")
-    public boolean updateVacancy(@RequestBody VacancyDto vacancyDto, @PathVariable("student_id") Long id) {
-        return vacancyService.updateVacancy(vacancyDto);
+    @PutMapping("/{id}/edit")
+    public boolean updateVacancy(@RequestBody VacancyDto vacancyDto, @PathVariable("id") Long id) {
+        return vacancyService.updateVacancy(vacancyDto, id);
+    }
+
+    @PutMapping("/{id}")
+    public boolean addVacancy(@RequestBody Long userId, @PathVariable("id") Long vacancyId) {
+        return vacancyService.addVacancy(userId, vacancyId);
     }
 }
